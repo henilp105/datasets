@@ -83,7 +83,7 @@ def convert_to_parquet(
     for config in configs:
         print(f"{config = }")
         dataset = load_dataset(repo_id, config, revision=revision, trust_remote_code=trust_remote_code)
-        dataset.push_to_hub(
+        commit_info = dataset.push_to_hub(
             repo_id,
             config_name=config,
             commit_message=f"Add '{config}' config data files",
@@ -91,6 +91,7 @@ def convert_to_parquet(
             token=token,
         )
         time.sleep(5)
+        pr_revision, pr_url = commit_info.pr_revision, commit_info.pr_url
     _delete_files(repo_id, revision=pr_revision, token=token)
     if not revision:
         api = HfApi(endpoint=datasets.config.HF_ENDPOINT, token=token)
